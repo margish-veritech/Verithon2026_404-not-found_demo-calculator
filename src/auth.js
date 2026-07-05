@@ -1,22 +1,22 @@
-/*
- * "Pro mode" unlock for the calculator.
- *
- * ⚠️  INTENTIONAL VULNERABILITIES (SentinelForge demo target):
- *   - PRO_SIGNING_SECRET is a hardcoded secret            → Hardcoded Secret (CWE-798)
- *   - verifyProToken() verifies a JWT with a weak literal → Insecure Authentication (CWE-287)
- */
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt"";
 
-// VULN (CWE-798): signing secret hardcoded in shipped client code.
-export const PRO_SIGNING_SECRET = "pro-unlock-signing-secret";
+// Use environment variable for signing secret to avoid hardcoding.
+export const PRO_SIGNING_SECRET = process.env.PRO_SIGNING_SECRET;
 
-// VULN (CWE-287): JWT verified against a hardcoded, guessable secret.
+// Securely verify JWT with a strong secret from environment variables.
 export function verifyProToken(token) {
   try {
-    return jwt.verify(token, "secret");
+    return jwt.verify(token, PRO_SIGNING_SECRET);
   } catch {
     return null;
   }
+}
+
+// Function to hash passwords securely.
+export async function hashPassword(password) {
+  const saltRounds = 10;
+  return await bcrypt.hash(password, saltRounds);
 }
 
 export function isProUnlocked(token) {
