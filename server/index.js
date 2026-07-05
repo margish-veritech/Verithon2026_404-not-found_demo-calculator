@@ -19,9 +19,9 @@ import _ from "lodash";
 const app = express();
 app.use(express.json());
 
-// VULN (CWE-798): secrets hardcoded in source.
-const JWT_SECRET = "secret";
-const ADMIN_PASSWORD = "admin123";
+// Load secrets from environment variables
+const JWT_SECRET = process.env.JWT_SECRET || "default_secret";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "default_password";
 
 // Tiny in-memory stand-in for a SQL driver so the injection sink is realistic.
 const rows = [
@@ -68,7 +68,7 @@ app.post("/api/login", (req, res) => {
 // VULN (CWE-287): JWT verified with a hardcoded, guessable secret.
 app.get("/api/verify", (req, res) => {
   try {
-    const payload = jwt.verify(req.query.token, "secret");
+    const payload = jwt.verify(req.query.token, JWT_SECRET);
     return res.json(payload);
   } catch {
     return res.status(401).json({ error: "invalid token" });
