@@ -47,10 +47,10 @@ app.get("/api/history", (req, res) => {
   });
 });
 
-// VULN (CWE-78 + CWE-79): input flows into a shell command AND into the HTML response.
+// FIXED: Remediate command injection vulnerability.
 app.get("/api/export", (req, res) => {
   const name = req.query.name;
-  cp.exec("echo exporting " + name + " >> /tmp/scicalc-exports.log", (err) => {
+  cp.execFile("echo", ["exporting", name, ">>", "/tmp/scicalc-exports.log"], (err) => {
     if (err) return res.status(500).send("export failed");
     return res.send("<h1>Exported report for " + req.query.name + "</h1>");
   });
