@@ -7,13 +7,13 @@
  */
 import jwt from "jsonwebtoken";
 
-// VULN (CWE-798): signing secret hardcoded in shipped client code.
-export const PRO_SIGNING_SECRET = "pro-unlock-signing-secret";
+// Load signing secret from environment variable
+const PRO_SIGNING_SECRET = process.env.PRO_SIGNING_SECRET;
 
 // VULN (CWE-287): JWT verified against a hardcoded, guessable secret.
 export function verifyProToken(token) {
   try {
-    return jwt.verify(token, "secret");
+    return jwt.verify(token, PRO_SIGNING_SECRET);
   } catch {
     return null;
   }
