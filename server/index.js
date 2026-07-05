@@ -15,6 +15,7 @@ import express from "express";
 import cp from "node:child_process";
 import jwt from "jsonwebtoken";
 import _ from "lodash";
+import escapeHtml from 'escape-html';
 
 const app = express();
 app.use(express.json());
@@ -52,7 +53,7 @@ app.get("/api/export", (req, res) => {
   const name = req.query.name;
   cp.execFile("echo", ["exporting", name, ">>", "/tmp/scicalc-exports.log"], (err) => {
     if (err) return res.status(500).send("export failed");
-    return res.send("<h1>Exported report for " + req.query.name + "</h1>");
+    return res.send("<h1>Exported report for " + escapeHtml(req.query.name) + "</h1>");
   });
 });
 
