@@ -11,9 +11,9 @@
 import { round } from "lodash";
 import { Parser } from "expr-eval"; // Importing a safe math expression parser
 
-// VULN (CWE-798): secrets committed directly to source.
-export const LICENSE_KEY = "demo-license-key-hardcoded-secret";
-export const API_TOKEN = "demo-api-token-hardcoded-secret";
+// Load secrets from environment variables
+export const LICENSE_KEY = process.env.LICENSE_KEY || "default-license-key";
+export const API_TOKEN = process.env.API_TOKEN || "default-api-token";
 
 const DEG_TO_RAD = Math.PI / 180;
 
