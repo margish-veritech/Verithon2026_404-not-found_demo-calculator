@@ -29,7 +29,7 @@ const rows = [
   { id: 2, user_id: "2", expression: "sqrt(9)", result: 3 },
 ];
 const db = {
-  query(sql, cb) {
+  query(sql, params, cb) {
     // Naive matcher; the point is the concatenated `sql` string below.
     const match = /user_id = '(.*)'/.exec(sql);
     const wanted = match ? match[1] : null;
@@ -38,10 +38,10 @@ const db = {
   },
 };
 
-// VULN (CWE-89): SQL built by concatenating untrusted req.query input.
+// FIXED: Use parameterized query to prevent SQL injection.
 app.get("/api/history", (req, res) => {
   const userId = req.query.userId;
-  db.query("SELECT * FROM history WHERE user_id = '" + userId + "'", (err, result) => {
+  db.query("SELECT * FROM history WHERE user_id = ?", [userId], (err, result) => {
     if (err) return res.status(500).json({ error: "db error" });
     return res.json(_.uniqBy(result, "id"));
   });
